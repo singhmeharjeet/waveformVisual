@@ -2,7 +2,7 @@
 
 #include "AudioFile.h"
 
-void read_file(const std::string& inputFilePath) {
+AudioFile<float> read_file(const std::string& inputFilePath) {
 	//---------------------------------------------------------------
 	// 2. Create an AudioFile object and load the audio file
 
@@ -35,4 +35,6 @@ void read_file(const std::string& inputFilePath) {
 
 	std::string outputFilePath = "quieter-audio-file.wav";	// change this to somewhere useful for you
 	a.save(outputFilePath, AudioFileFormat::Aiff);
+
+	return a;
 }

@@ -19,6 +19,8 @@ set(BUILD_TESTS OFF)
 set(BUILD_EXAMPLES OFF)
 add_subdirectory(AudioFile)
 
+#IMGUI
+add_subdirectory(imgui)
 
 add_library(vendor INTERFACE)
 target_sources(vendor 

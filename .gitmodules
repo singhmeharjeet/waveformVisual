@@ -1,12 +1,14 @@
 [submodule "vendor/SDL"]
 	path = vendor/SDL
 	url = https://github.com/libsdl-org/SDL
-[submodule "tinyfiledialogs-cmake"]
+[submodule "vendor/tinyfiledialogs-cmake"]
 	path = tinyfiledialogs-cmake
 	url = https://github.com/SavaLione/tinyfiledialogs-cmake.git
-[submodule "vendor/nanogui-sdl"]
-	path = vendor/nanogui-sdl
-	url = https://github.com/dalerank/nanogui-sdl
 [submodule "vendor/AudioFile"]
 	path = vendor/AudioFile
 	url = https://github.com/adamstark/AudioFile.git
+[submodule "vendor/imgui"]
+	path = vendor/imgui
+	url = https://github.com/ocornut/imgui.git
+	branch = docking
+
