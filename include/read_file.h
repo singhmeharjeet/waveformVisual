@@ -24,12 +24,6 @@ AudioFile<float> read_file(const std::string& inputFilePath) {
 		}
 	}
 
-	std::cout << "Bit Depth: " << a.getBitDepth() << std::endl;
-	std::cout << "Sample Rate: " << a.getSampleRate() << std::endl;
-	std::cout << "Num Channels: " << a.getNumChannels() << std::endl;
-	std::cout << "Length in Seconds: " << a.getLengthInSeconds() << std::endl;
-	std::cout << std::endl;
-
 	//---------------------------------------------------------------
 	// 4. Write audio file to disk
 

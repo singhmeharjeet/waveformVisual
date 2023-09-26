@@ -26,7 +26,7 @@ int main(int, char**) {
 	SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 
 	// Create window with SDL_Renderer graphics context
-	SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN);
+	SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
 	SDL_Window* window = SDL_CreateWindow("Waveform Visualizer", 800, 600, window_flags);
 	if (window == nullptr) {
 		printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
@@ -49,14 +49,14 @@ int main(int, char**) {
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
 
 	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	// ImGui::StyleColorsLight();
+	// ImGui::StyleColorsDark();
+	ImGui::StyleColorsLight();
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
 	ImGui_ImplSDLRenderer3_Init(renderer);
 
-	auto font = io.Fonts->AddFontFromFileTTF("../assests/verdana.ttf", 18.0f);
+	auto font = io.Fonts->AddFontFromFileTTF("../assests/Roboto-Medium.ttf", 18.0f);
 	IM_ASSERT(font != nullptr);
 
 	// Our state
@@ -66,8 +66,10 @@ int main(int, char**) {
 
 	// Main loop
 	bool done = false;
+
 	AudioFile<float> waveFile;
-	bool show_demo_window = true;
+	// waveFile = read_file("/Users/mehar/Desktop/Education/Sem 12/365/Project1try4/assets/test-audio.wav");
+
 	while (!done) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -83,32 +85,71 @@ int main(int, char**) {
 		ImGui_ImplSDL3_NewFrame();
 		ImGui::NewFrame();
 
-		// ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		// ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-		// {
-		// 	ImGui::Begin("Demo Window", &show_demo_window, 0);
-		// 	ImGui::ShowDemoWindow();
-		// 	ImGui::End();
-		// }
+		ImGui::Begin("", &show_upload_button, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
 
-		if (ImGui::Begin("", &show_upload_button, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse)) {
-			ImGui::Separator();
-			if (ImGui::Button("Open a Audiofile to continue...")) {
+		if (waveFile.getFileName().empty()) {
+			ImGui::Dummy(ImVec2(0.0f, 10.0f));
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 255.0f, 1.0f), "Select a file to continue");
+			if (ImGui::Button("Choose file")) {
 				show_upload_button = false;
-				auto modal = tinyfd_openFileDialog("Select a .wav file to display", "", 1, (const char*[]){"*.wav"}, "WAV files", 0);
-				waveFile = read_file(modal);
+				auto filepath = tinyfd_openFileDialog("Select a .wav file to display", "", 1, (const char*[]){"*.wav"}, "WAV files", 0);
+				waveFile = read_file(filepath);
 			}
-
-			ImGui::Text("Selected File: %s", waveFile.getFileName().c_str());
+		} else {
+			ImGui::Dummy(ImVec2(0.0f, 10.0f));
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 255.0f, 1.0f), "Selected File");
+			ImGui::Text("%s", waveFile.getFileName().c_str());
 			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0.0f, 10.0f));
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 255.0f, 1.0f), "File Info");
 			ImGui::Text("Bit Depth: %d", waveFile.getBitDepth());
 			ImGui::Text("Sample Rate: %d", waveFile.getSampleRate());
 			ImGui::Text("Num Channels: %d", waveFile.getNumChannels());
 			ImGui::Text("Length in Seconds: %f", waveFile.getLengthInSeconds());
-			ImGui::Separator();
 
-			ImGui::End();
+			ImGui::Dummy(ImVec2(0.0f, 10.0f));
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 255.0f, 1.0f), "Waveform");
+			static float audioLengthInSeconds = waveFile.getLengthInSeconds();
+			static float maxAmplitudeHeight = 300.0f;
+			static float targetWidth = 795.0f;
+			static int initialWaveformWidth = 795;
+			static float scaleAmplitude = maxAmplitudeHeight / 1.8f;  // Divide by 2 to ensure it fits within maxAmplitudeHeight
+			static float waveformHeight = maxAmplitudeHeight;		  // Set the height to the maximum amplitude height
+			static ImVec2 p0 = ImGui::GetCursorScreenPos();
+
+			// Begin the scrollable area with an explicitly defined content size
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 1.0f));
+			ImGui::BeginChild("scrolling", ImVec2(780, waveformHeight), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+			// Display waveform
+			ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+			static float dx = (targetWidth / static_cast<float>(waveFile.getNumSamplesPerChannel())) * 2;
+			static float halfMaxAmplitudeHeight = maxAmplitudeHeight / 2.0f;
+
+			for (int n = 0; n < waveFile.getNumSamplesPerChannel(); n++) {
+				float t0 = n * dx;
+				float t1 = (n + 1) * dx;
+
+				float sample0 = waveFile.samples[0][n];
+				float sample1 = waveFile.samples[0][n + 1];
+
+				// Scale the amplitude to fit within maxAmplitudeHeight
+				float scaledSample0 = sample0 * scaleAmplitude * 1.5;
+				float scaledSample1 = sample1 * scaleAmplitude * 1.5;
+
+				ImVec2 p1(p0.x + t0, p0.y + halfMaxAmplitudeHeight - scaledSample0);
+				ImVec2 p2(p0.x + t1, p0.y + halfMaxAmplitudeHeight - scaledSample1);
+
+				draw_list->AddLine(p1, p2, IM_COL32(200, 0, 200, 200), 1.0f);
+			}
+
+			ImGui::PopStyleVar();  // ImGuiStyleVar_FrameRounding
+			ImGui::PopStyleVar();  // ImGuiStyleVar_FramePadding
+			ImGui::EndChild();
 		}
+		ImGui::End();
 
 		// Rendering
 		ImGui::Render();
