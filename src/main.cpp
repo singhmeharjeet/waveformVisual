@@ -56,7 +56,7 @@ int main(int, char**) {
 	ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
 	ImGui_ImplSDLRenderer3_Init(renderer);
 
-	auto font = io.Fonts->AddFontFromFileTTF("../assests/Roboto-Medium.ttf", 18.0f);
+	auto font = io.Fonts->AddFontFromFileTTF("../assets/Roboto-Medium.ttf", 18.0f);
 	IM_ASSERT(font != nullptr);
 
 	// Our state
@@ -68,7 +68,6 @@ int main(int, char**) {
 	bool done = false;
 
 	AudioFile<float> waveFile;
-	// waveFile = read_file("/Users/mehar/Desktop/Education/Sem 12/365/Project1try4/assets/test-audio.wav");
 
 	while (!done) {
 		SDL_Event event;
@@ -85,7 +84,8 @@ int main(int, char**) {
 		ImGui_ImplSDL3_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::Begin("", &show_upload_button, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::Begin("Waveform", &show_upload_button, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
 		if (waveFile.getFileName().empty()) {
 			ImGui::Dummy(ImVec2(0.0f, 10.0f));

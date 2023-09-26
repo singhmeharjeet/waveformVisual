@@ -4,7 +4,7 @@
 
 AudioFile<float> read_file(const std::string& inputFilePath) {
 	//---------------------------------------------------------------
-	// 2. Create an AudioFile object and load the audio file
+	// 1. Create an AudioFile object and load the audio file
 
 	AudioFile<float> a;
 	bool loadedOK = a.load(inputFilePath);
@@ -14,9 +14,9 @@ AudioFile<float> read_file(const std::string& inputFilePath) {
 	assert(loadedOK);
 
 	//---------------------------------------------------------------
-	// 3. Let's apply a gain to every audio sample
+	// 2. Let's apply a gain to every audio sample
 
-	float gain = 0.5f;
+	float gain = 0.7f;
 
 	for (int i = 0; i < a.getNumSamplesPerChannel(); i++) {
 		for (int channel = 0; channel < a.getNumChannels(); channel++) {
