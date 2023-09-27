@@ -28,7 +28,7 @@ int main(int, char**) {
 
 	// Create window with SDL_Renderer graphics context
 	SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
-	SDL_Window* window = SDL_CreateWindow("Waveform Visualizer", 800, 600, window_flags);
+	SDL_Window* window = SDL_CreateWindow("Waveform Visualizer", 800, 800, window_flags);
 	if (window == nullptr) {
 		printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
 		return -1;
@@ -68,6 +68,7 @@ int main(int, char**) {
 	bool done = false;
 
 	AudioFile<float> waveFile;
+	//  = read_file("/Users/mehar/Desktop/Education/Sem 12/365/Project1/assets/test samples/Q1/audio2.wav");
 
 	while (!done) {
 		SDL_Event event;
@@ -85,7 +86,7 @@ int main(int, char**) {
 		ImGui::NewFrame();
 
 		ImGui::SetNextWindowPos(ImVec2(0, 0));
-		ImGui::SetNextWindowSize(ImVec2(800, 600));
+		ImGui::SetNextWindowSize(ImVec2(800, 800));
 		ImGui::Begin("Waveform", &show_upload_button, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
 		if (waveFile.getFileName().empty()) {
@@ -111,44 +112,77 @@ int main(int, char**) {
 			ImGui::Dummy(ImVec2(0.0f, 10.0f));
 			ImGui::TextColored(ImVec4(1.0f, 0.0f, 255.0f, 1.0f), "Waveform");
 			static float audioLengthInSeconds = waveFile.getLengthInSeconds();
-			static float maxAmplitudeHeight = 300.0f;
+			static float maxAmplitudeHeight = 200.0f;
 			static float targetWidth = 795.0f;
 			static int initialWaveformWidth = 795;
-			static float scaleAmplitude = maxAmplitudeHeight / 1.8f;  // Divide by 2 to ensure it fits within maxAmplitudeHeight
+			static float scaleAmplitude = maxAmplitudeHeight / 2.0f;  // Divide by 2 to ensure it fits within maxAmplitudeHeight
 			static float waveformHeight = maxAmplitudeHeight;		  // Set the height to the maximum amplitude height
-			static ImVec2 p0 = ImGui::GetCursorScreenPos();
 
-			// Begin the scrollable area with an explicitly defined content size
-			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 1.0f));
-			ImGui::BeginChild("scrolling", ImVec2(780, waveformHeight), true, ImGuiWindowFlags_HorizontalScrollbar);
+			{
+				ImVec2 p0 = ImGui::GetCursorScreenPos();
 
-			// Display waveform
-			ImDrawList* draw_list = ImGui::GetWindowDrawList();
+				// Begin the scrollable area with an explicitly defined content size
+				ImGui::BeginChild("scrolling2", ImVec2(780, waveformHeight), true, ImGuiWindowFlags_HorizontalScrollbar);
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 1.0f));
 
-			static float dx = (targetWidth / static_cast<float>(waveFile.getNumSamplesPerChannel())) * 2;
-			static float halfMaxAmplitudeHeight = maxAmplitudeHeight / 2.0f;
+				// Display waveform
+				ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-			for (int n = 0; n < waveFile.getNumSamplesPerChannel(); n++) {
-				float t0 = n * dx;
-				float t1 = (n + 1) * dx;
+				static float dx = (targetWidth / static_cast<float>(waveFile.getNumSamplesPerChannel()));
+				static float halfMaxAmplitudeHeight = maxAmplitudeHeight / 2.0f;
 
-				float sample0 = waveFile.samples[0][n];
-				float sample1 = waveFile.samples[0][n + 1];
+				for (int n = 0; n < waveFile.getNumSamplesPerChannel(); n++) {
+					float t0 = n * dx;
+					float t1 = (n + 1) * dx;
 
-				// Scale the amplitude to fit within maxAmplitudeHeight
-				float scaledSample0 = sample0 * scaleAmplitude * 1.5;
-				float scaledSample1 = sample1 * scaleAmplitude * 1.5;
+					float sample0 = waveFile.samples[0][n];
+					float sample1 = waveFile.samples[0][n + 1];
 
-				ImVec2 p1(p0.x + t0, p0.y + halfMaxAmplitudeHeight - scaledSample0);
-				ImVec2 p2(p0.x + t1, p0.y + halfMaxAmplitudeHeight - scaledSample1);
+					// Scale the amplitude to fit within maxAmplitudeHeight
+					float scaledSample0 = sample0 * scaleAmplitude * 1.5;
+					float scaledSample1 = sample1 * scaleAmplitude * 1.5;
 
-				draw_list->AddLine(p1, p2, IM_COL32(200, 0, 200, 200), 1.0f);
+					ImVec2 p1(p0.x + t0, p0.y + halfMaxAmplitudeHeight - scaledSample0);
+					ImVec2 p2(p0.x + t1, p0.y + halfMaxAmplitudeHeight - scaledSample1);
+
+					draw_list->AddLine(p1, p2, IM_COL32(200, 0, 200, 200), 1.0f);
+				}
+
+				ImGui::PopStyleVar();  // ImGuiStyleVar_FrameRounding
+				ImGui::PopStyleVar();  // ImGuiStyleVar_FramePadding
+				ImGui::EndChild();
+
+				p0 = ImGui::GetCursorScreenPos();
+				// Begin the scrollable area with an explicitly defined content size
+				ImGui::BeginChild("scrolling", ImVec2(780, waveformHeight), true, ImGuiWindowFlags_HorizontalScrollbar);
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 1.0f));
+
+				// Display waveform
+				ImDrawList* draw_list2 = ImGui::GetWindowDrawList();
+
+				for (int n = 0; n < waveFile.getNumSamplesPerChannel(); n++) {
+					float t0 = n * dx;
+					float t1 = (n + 1) * dx;
+
+					float sample0 = waveFile.samples[1][n];
+					float sample1 = waveFile.samples[1][n + 1];
+
+					// Scale the amplitude to fit within maxAmplitudeHeight
+					float scaledSample0 = sample0 * scaleAmplitude * 1.5;
+					float scaledSample1 = sample1 * scaleAmplitude * 1.5;
+
+					ImVec2 p1(p0.x + t0, p0.y + halfMaxAmplitudeHeight - scaledSample0);
+					ImVec2 p2(p0.x + t1, p0.y + halfMaxAmplitudeHeight - scaledSample1);
+
+					draw_list2->AddLine(p1, p2, IM_COL32(200, 0, 200, 200), 1.0f);
+				}
+
+				ImGui::PopStyleVar();  // ImGuiStyleVar_FrameRounding
+				ImGui::PopStyleVar();  // ImGuiStyleVar_FramePadding
+				ImGui::EndChild();
 			}
-
-			ImGui::PopStyleVar();  // ImGuiStyleVar_FrameRounding
-			ImGui::PopStyleVar();  // ImGuiStyleVar_FramePadding
-			ImGui::EndChild();
 		}
 		ImGui::End();
 
