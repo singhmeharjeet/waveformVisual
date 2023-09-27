@@ -5,6 +5,7 @@
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
+#include "myfont.cpp"
 #include "read_file.h"
 #include "tinyfiledialogs.cpp"
 
@@ -56,9 +57,8 @@ int main(int, char**) {
 	ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
 	ImGui_ImplSDLRenderer3_Init(renderer);
 
-	auto font = io.Fonts->AddFontFromFileTTF("../assets/Roboto-Medium.ttf", 18.0f);
+	ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(MyFont_compressed_data, MyFont_compressed_size, 18.0f);
 	IM_ASSERT(font != nullptr);
-
 	// Our state
 	static bool show_upload_button = true;
 
@@ -85,6 +85,7 @@ int main(int, char**) {
 		ImGui::NewFrame();
 
 		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::SetNextWindowSize(ImVec2(800, 600));
 		ImGui::Begin("Waveform", &show_upload_button, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
 		if (waveFile.getFileName().empty()) {

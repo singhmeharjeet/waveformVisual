@@ -12,7 +12,11 @@ target_include_directories(${PROJECT_NAME}
 		${CMAKE_HOME_DIRECTORY}/vendor/imgui
 
 )
-target_sources(${PROJECT_NAME} PRIVATE main.cpp)
+target_sources(${PROJECT_NAME} 
+	PRIVATE 
+		main.cpp 
+		myfont.cpp
+)
 
 target_link_libraries(${PROJECT_NAME} 
 	PRIVATE 
