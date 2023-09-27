@@ -17,7 +17,7 @@ Follow these steps to install and set up the project:
 You can clone the project using the following command:
 
 ```bash
-git clone https://github.com/singhmeharjeet/waveformVisualizer.git
+git clone https://github.com/singhmeharjeet/waveformVisual.git
 ```
 
 Alternatively, you can download the ZIP and extract it to your desired location.
