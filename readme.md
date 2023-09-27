@@ -52,8 +52,6 @@ make
 
 #### 3.3. Run the Project
 
-Compile the project using `make`:
-
 ```bash
 ./src/waveform
 ```
