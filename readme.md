@@ -24,9 +24,10 @@ Alternatively, you can download the ZIP and extract it to your desired location.
 
 ### 2. Navigate to the Build Folder
 
-Navigate to the project's build folder using the terminal:
+Make a build folder and navigate to it using the terminal:
 
 ```bash
+mkdir build
 cd build
 ```
 
