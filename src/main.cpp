@@ -67,6 +67,7 @@ int main(int, char**) {
 	// Main loop
 	bool done = false;
 
+	char const* filepath;
 	AudioFile<float> waveFile;
 	//  = read_file("/Users/mehar/Desktop/Education/Sem 12/365/Project1/assets/test samples/Q1/audio2.wav");
 
@@ -89,18 +90,18 @@ int main(int, char**) {
 		ImGui::SetNextWindowSize(ImVec2(800, 800));
 		ImGui::Begin("Waveform", &show_upload_button, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
-		if (waveFile.getFileName().empty()) {
+		if (filepath == nullptr) {
 			ImGui::Dummy(ImVec2(0.0f, 10.0f));
 			ImGui::TextColored(ImVec4(1.0f, 0.0f, 255.0f, 1.0f), "Select a file to continue");
 			if (ImGui::Button("Choose file")) {
 				show_upload_button = false;
-				auto filepath = tinyfd_openFileDialog("Select a .wav file to display", "", 1, (const char*[]){"*.wav"}, "WAV files", 0);
+				filepath = tinyfd_openFileDialog("Select a .wav file to display", "", 1, (const char*[]){"*.wav"}, "WAV files", 0);
 				waveFile = read_file(filepath);
 			}
 		} else {
 			ImGui::Dummy(ImVec2(0.0f, 10.0f));
 			ImGui::TextColored(ImVec4(1.0f, 0.0f, 255.0f, 1.0f), "Selected File");
-			ImGui::Text("%s", waveFile.getFileName().c_str());
+			ImGui::Text("%s", filepath);
 			ImGui::Separator();
 			ImGui::Dummy(ImVec2(0.0f, 10.0f));
 			ImGui::TextColored(ImVec4(1.0f, 0.0f, 255.0f, 1.0f), "File Info");
