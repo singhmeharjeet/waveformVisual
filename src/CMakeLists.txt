@@ -18,7 +18,7 @@ target_sources(${PROJECT_NAME}
 	PRIVATE 
 		main.cpp 
 		myfont.cpp
-		huffman.cpp
+		huffman.h
 )
 
 target_link_libraries(${PROJECT_NAME} 

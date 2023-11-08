@@ -2,12 +2,11 @@
 #include <stdio.h>
 
 #include "AudioFile.h"
-#include "huffman.cpp"
+#include "huffman.h"
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
 #include "myfont.cpp"
-#include "read_file.h"
 #include "tinyfiledialogs.cpp"
 
 #define WIDTH  1200
@@ -92,7 +91,7 @@ int main(int, char**) {
 			if (ImGui::Button("Choose file")) {
 				show_upload_button = false;
 				filepath = tinyfd_openFileDialog("Select a .wav file to display", "", 1, (const char*[]){"*.wav"}, "WAV files", 0);
-				waveFile = read_file(filepath);
+				waveFile.load(filepath);
 				entropy = get_entropy(waveFile);
 				avg_code_length = get_average_code_length(waveFile);
 			}
