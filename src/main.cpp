@@ -1,8 +1,8 @@
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_opengl.h>
 #include <stdio.h>
 
 #include "AudioFile.h"
+#include "huffman.cpp"
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
@@ -62,8 +62,10 @@ int main(int, char**) {
 	// Main loop
 	bool done = false;
 
-	char const* filepath = "/Users/mehar/Desktop/Education/Sem 12/365/Project 2/q2/assets/test samples/Q1/audio1.wav";
-	AudioFile<float> waveFile = read_file(filepath);
+	char const* filepath;
+	AudioFile<float> waveFile;
+	float entropy;
+	float avg_code_length;
 
 	while (!done) {
 		SDL_Event event;
@@ -91,6 +93,8 @@ int main(int, char**) {
 				show_upload_button = false;
 				filepath = tinyfd_openFileDialog("Select a .wav file to display", "", 1, (const char*[]){"*.wav"}, "WAV files", 0);
 				waveFile = read_file(filepath);
+				entropy = get_entropy(waveFile);
+				avg_code_length = get_average_code_length(waveFile);
 			}
 		} else {
 			ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -103,20 +107,20 @@ int main(int, char**) {
 			ImGui::Text("Sample Rate: %d", waveFile.getSampleRate());
 			ImGui::Text("Num Channels: %d", waveFile.getNumChannels());
 			ImGui::Text("Length in Seconds: %f", waveFile.getLengthInSeconds());
+			ImGui::Text("Entropy: %f", entropy);
+			ImGui::Text("Avg Word Length: %f", avg_code_length);
 
 			ImGui::Dummy(ImVec2(0.0f, 10.0f));
 			ImGui::TextColored(ImVec4(1.0f, 0.0f, 255.0f, 1.0f), "Waveform");
 
-			static float targetHeight = ImGui::GetContentRegionAvail().y / 2.5f;
-			static float targetWidth = ImGui::GetContentRegionAvail().x;
-			static float offset = targetHeight / 2.0f;
-			static float dx = ((targetWidth) / waveFile.getNumSamplesPerChannel());
+			static float graphHeight = ImGui::GetContentRegionAvail().y / 2.5f;
+			static float graphWidth = ImGui::GetContentRegionAvail().x;
+			static float offset = graphHeight / 2.0f;
+			static float dx = graphWidth / waveFile.getNumSamplesPerChannel();
 
 			ImVec2 p0 = ImGui::GetCursorScreenPos();
 
-			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 20.0f);
-
-			ImGui::BeginChild("graph1", ImVec2(targetWidth, targetHeight), true, 0);
+			ImGui::BeginChild("graph1", ImVec2(graphWidth, graphHeight), true, 0);
 			ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize("Left Channel").x);
 			ImGui::Text("Left Channel");
 
@@ -130,16 +134,17 @@ int main(int, char**) {
 				float sample0 = waveFile.samples[0][n];
 				float sample1 = waveFile.samples[0][n + 1];
 
-				ImVec2 p1(p0.x + t0, p0.y + (sample0 * targetHeight) + offset);
-				ImVec2 p2(p0.x + t1, p0.y + (sample1 * targetHeight) + offset);
+				ImVec2 p1(p0.x + t0, p0.y + (sample0 * graphHeight) + offset);
+				ImVec2 p2(p0.x + t1, p0.y + (sample1 * graphHeight) + offset);
 
 				draw_list->AddLine(p1, p2, IM_COL32(200, 0, 200, 200), 1.0f);
 			}
 			ImGui::EndChild();
 
+			ImGui::Dummy(ImVec2(0.0f, 10.0f));
 			p0 = ImGui::GetCursorScreenPos();
 
-			ImGui::BeginChild("graph2", ImVec2(targetWidth, targetHeight), true, 0);
+			ImGui::BeginChild("graph2", ImVec2(graphWidth, graphHeight), true, 0);
 			ImGui::SetCursorPosX(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize("Right Channel").x);
 			ImGui::Text("Right Channel");
 
@@ -150,13 +155,12 @@ int main(int, char**) {
 				float sample0 = waveFile.samples[1][n];
 				float sample1 = waveFile.samples[1][n + 1];
 
-				ImVec2 p1(p0.x + t0, p0.y + (sample0 * targetHeight) + offset);
-				ImVec2 p2(p0.x + t1, p0.y + (sample1 * targetHeight) + offset);
+				ImVec2 p1(p0.x + t0, p0.y + (sample0 * graphHeight) + offset);
+				ImVec2 p2(p0.x + t1, p0.y + (sample1 * graphHeight) + offset);
 
 				draw_list->AddLine(p1, p2, IM_COL32(200, 0, 200, 200), 1.0f);
 			}
 			ImGui::EndChild();
-			ImGui::PopStyleVar();  // ImGuiStyleVar_FrameRounding
 		}
 		ImGui::End();
 
