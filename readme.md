@@ -1,61 +1,38 @@
-# Project Name
+## How to make the executable file? ###
 
-This a C++ project to visualize the waveform of an audio file.
+#### Step 0: Prerequisites
 
-## Table of Contents
+1) Your system should have `git` installed.
+2) Your system should have `cmake` installed.
+3) Your system should have `make` installed.
 
--   [Installation](#installation)
--   [Technologies Used](#technologies-used)
--   [License](#license)
-
-## Installation
-
-Follow these steps to install and set up the project:
-
-### 1. Clone or Download
-
-You can clone the project using the following command:
+#### Step 1: Git clone
 
 ```bash
-git clone https://github.com/singhmeharjeet/waveformVisual.git
+git clone "https://github.com/singhmeharjeet/waveformVisual" . --recurse-submodules -j8 
 ```
 
-Alternatively, you can download the ZIP and extract it to your desired location.
+- This command will clone the project into current directory and will also clone the required submodules.
+- The `-j8` flag is optional and is used to speed up the cloning process.
+- This command will download `SDL`, `SDL_image`, `imgui` and `tinyfiledialogs` submodules, so it will take some time. It
+  is around 500mb.
 
-### 2. Navigate to the Build Folder
-
-Make a build folder and navigate to it using the terminal:
+#### Step 2: Build the project
 
 ```bash
-mkdir build
 cd build
-```
-
-### 3. Build the Project
-
-In the terminal, run the following commands to build the project:
-
-#### 3.1. Configure the Project
-
-Use `cmake` to configure the project:
-
-```bash
 cmake ..
-```
-
-#### 3.2. Build the Project
-
-Compile the project using `make`:
-
-```bash
 make
 ```
 
-#### 3.3. Run the Project
+- The first time running these command will take a minute or two, but after that it will be fast.
 
+#### Step 3: Run the executable (inside the build folder)
 ```bash
-./src/waveform
-```
+./src/image
+``` 
+
+Now, the executable will be found in the `./build/src/` folder by the name of `image`
 
 ## Technologies Used
 
